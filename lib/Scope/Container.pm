@@ -42,7 +42,6 @@ Scope::Container - scope based container
 
   use Scope::Container;
 
-  my $contaier = start_scope_container();
 
   sub getdb {
       if ( my $dbh = scope_container('db') ) {
@@ -54,10 +53,12 @@ Scope::Container - scope based container
       }
   }
 
-  getdb(); # do connect
-  getdb(); # from container
-
-  undef $container; #disconnect from db
+  for (1..10) {
+    my $contaier = start_scope_container();
+    getdb(); # do connect
+    getdb(); # from container
+    getdb(); # from container
+  }
 
   getdb(); # do connect
 

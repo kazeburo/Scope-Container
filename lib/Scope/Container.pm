@@ -42,7 +42,6 @@ Scope::Container - scope based container
 
   use Scope::Container;
 
-
   sub getdb {
       if ( my $dbh = scope_container('db') ) {
           return $dbh;

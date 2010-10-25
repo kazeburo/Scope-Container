@@ -52,11 +52,12 @@ Scope::Container - scope based container
       }
   }
 
-  for (1..10) {
+  for (1..3) {
     my $contaier = start_scope_container();
     getdb(); # do connect
     getdb(); # from container
     getdb(); # from container
+    # $container scope out and disconnect from db
   }
 
   getdb(); # do connect

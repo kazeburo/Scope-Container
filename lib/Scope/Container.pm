@@ -23,7 +23,10 @@ sub start_scope_container {
 sub scope_container {
     my $key = shift;
     die "undefined key" if ! defined $key;
-    debugf("scope_container is not initilized") if ! defined $CONTEXT;
+    if ( ! defined $CONTEXT ) {
+        debugf("scope_container is not initilized");
+        return;
+    }
     if ( @_ ) {
         return $CONTEXT->{$key} = shift;
     }

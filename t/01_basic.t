@@ -22,7 +22,7 @@ sub bar {
     {
         bar('foo','foo2');
         my $sc = start_scope_container();
-        ok( ! scope_container('foo') );
+        ok( scope_container('foo') );
         scope_container('foo', 'foo3');
         bar('foo','foo3');
         {

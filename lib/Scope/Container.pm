@@ -13,7 +13,7 @@ my $CONTEXT;
 sub start_scope_container {
     my $old;
     $old = $CONTEXT if defined $CONTEXT;
-    $CONTEXT = {};
+    $CONTEXT = { map { $_ => $old->{$_} } keys %$old };
     return guard {
         undef $CONTEXT;
         $CONTEXT = $old if defined $old;
@@ -67,7 +67,7 @@ Scope::Container - scope based container
 
 =head1 DESCRIPTION
 
-Scope::Container is scope based container for temporary items and Database Connections.
+Scope::Container is scope based container for temporary cache items and Database Connections.
 
 =head1 EXPORTED FUNCTION
 
@@ -75,7 +75,7 @@ Scope::Container is scope based container for temporary items and Database Conne
 
 =item my $guard = start_scope_container();
 
-=item my $value = scope_container($key:Str[,$val:Str]);
+=item my $value = scope_container($key:Str[,$val]);
 
 =back
 

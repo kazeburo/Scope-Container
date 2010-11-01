@@ -3,18 +3,34 @@ package Scope::Container;
 use strict;
 use warnings;
 use Guard;
-use Log::Minimal;
+use Carp qw//;
 use base qw/Exporter/;
 
 our $VERSION = '0.01';
 our @EXPORT = qw/start_scope_container scope_container/;
+
 my $CONTEXT;
+my $C=0;
 
 sub start_scope_container {
+    my %args = @_;
     my $old;
-    $old = $CONTEXT if defined $CONTEXT;
-    $CONTEXT = { map { $_ => $old->{$_} } keys %$old };
+    if ( $args{-clear} ) {
+        undef $CONTEXT;
+        $CONTEXT = {};
+    }
+    elsif ( defined $CONTEXT ) {
+        $old = $CONTEXT;
+        $CONTEXT = { map { $_ => $old->{$_} } keys %$old };
+    }
+    else {
+        $CONTEXT = {};
+    }
+
+    my $c = $C++;
     return guard {
+        --$C;
+        Carp::carp("nested scope_container found") if $c != $C;
         undef $CONTEXT;
         $CONTEXT = $old if defined $old;
     };
@@ -24,7 +40,7 @@ sub scope_container {
     my $key = shift;
     die "undefined key" if ! defined $key;
     if ( ! defined $CONTEXT ) {
-        debugf("scope_container is not initilized");
+        Carp::carp("scope_container is not initilized");
         return;
     }
     if ( @_ ) {
@@ -67,23 +83,45 @@ Scope::Container - scope based container
 
 =head1 DESCRIPTION
 
-Scope::Container is scope based container for temporary cache items and Database Connections.
+Scope::Container is scope based container for temporary items and Database Connections.
 
 =head1 EXPORTED FUNCTION
 
 =over 4
 
-=item my $guard = start_scope_container();
+=item my $guard = start_scope_container([-clear => 1]);
+
+initializing container. The default behavior is inherited all the previous container's data.
+If set -clear arguments, save previous container's data and create new data.
+
+return values is L<Guard> object. if the guard object scope exits, current container will be removed, return to the previous state.
 
 =item my $value = scope_container($key:Str[,$val]);
 
+getter, setter of container data.
+
 =back
+
+=head1 LIMITATION
+
+There is a limit to the order in which the Guard object is deleted
+
+  my $sc = start_scope_container();
+  scope_container('bar', 'foo');
+  my $sc2 = start_scope_container();
+  scope_container('bar', 'baz');
+
+  undef $sc;
+  scope_container('bar'); #null
+
 
 =head1 AUTHOR
 
 Masahiro Nagano E<lt>kazeburo {at} gmail.comE<gt>
 
 =head1 SEE ALSO
+
+L<Guard>
 
 =head1 LICENSE
 

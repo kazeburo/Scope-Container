@@ -2,7 +2,6 @@ package Scope::Container;
 
 use strict;
 use warnings;
-use Guard;
 use Carp qw//;
 use base qw/Exporter/;
 
@@ -15,11 +14,7 @@ my $C=0;
 sub start_scope_container {
     my %args = @_;
     my $old;
-    if ( $args{-clear} ) {
-        undef $CONTEXT;
-        $CONTEXT = {};
-    }
-    elsif ( defined $CONTEXT ) {
+    if ( defined $CONTEXT and !$args{-clear} ) {
         $old = $CONTEXT;
         $CONTEXT = { map { $_ => $old->{$_} } keys %$old };
     }
@@ -27,13 +22,14 @@ sub start_scope_container {
         $CONTEXT = {};
     }
 
-    my $c = $C++;
-    return guard {
-        --$C;
-        Carp::carp("nested scope_container found") if $c != $C;
-        undef $CONTEXT;
-        $CONTEXT = $old if defined $old;
-    };
+    return bless { c => $C++, old => $old }, __PACKAGE__;
+}
+
+sub DESTROY {
+    my($self) = @_;
+    Carp::carp("nested scope_container found") if $self->{c} != --$C;
+    $CONTEXT = $self->{old};
+    return;
 }
 
 sub scope_container {

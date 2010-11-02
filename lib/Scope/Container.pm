@@ -9,7 +9,7 @@ our $VERSION = '0.01';
 our @EXPORT = qw/start_scope_container scope_container/;
 
 my $CONTEXT;
-my $C=0;
+my $C = 0;
 
 sub start_scope_container {
     my %args = @_;
@@ -85,14 +85,14 @@ Scope::Container is scope based container for temporary items and Database Conne
 
 =over 4
 
-=item my $guard = start_scope_container([-clear => 1]);
+=item my $scope_container = start_scope_container([-clear => 1]);
 
 initializing container. The default behavior is inherited all the previous container's data.
 If set -clear arguments, save previous container's data and create new data.
 
-return values is L<Guard> object. if the guard object scope exits, current container will be removed, return to the previous state.
+return values is Scope::Container object. if this object scope exits, current container will be removed, return to the previous state.
 
-=item my $value = scope_container($key:Str[,$val]);
+=item my $value = scope_container($key:Str[,$val:Any]);
 
 getter, setter of container data.
 
@@ -100,7 +100,7 @@ getter, setter of container data.
 
 =head1 LIMITATION
 
-There is a limit to the order in which the Guard object is deleted
+There is a limit to the order in which the Scope::Container object is deleted
 
   my $sc = start_scope_container();
   scope_container('bar', 'foo');
@@ -115,9 +115,7 @@ There is a limit to the order in which the Guard object is deleted
 
 Masahiro Nagano E<lt>kazeburo {at} gmail.comE<gt>
 
-=head1 SEE ALSO
-
-L<Guard>
+Fuji, Goro (gfx)
 
 =head1 LICENSE
 

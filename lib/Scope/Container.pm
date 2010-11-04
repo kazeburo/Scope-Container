@@ -5,8 +5,8 @@ use warnings;
 use Carp qw//;
 use base qw/Exporter/;
 
-our $VERSION = '0.01';
-our @EXPORT = qw/start_scope_container scope_container/;
+our $VERSION = '0.02';
+our @EXPORT = qw/start_scope_container scope_container in_scope_container/;
 
 my $CONTEXT;
 my $C = 0;
@@ -27,9 +27,18 @@ sub start_scope_container {
 
 sub DESTROY {
     my($self) = @_;
-    Carp::carp("nested scope_container found") if $self->{c} != --$C;
-    $CONTEXT = $self->{old};
+    if ( $self->{c} != --$C ) {
+        Carp::carp("nested scope_container found, remove all data");
+        undef $CONTEXT;
+    }
+    else {
+        $CONTEXT = $self->{old};
+    }
     return;
+}
+
+sub in_scope_container {
+    defined $CONTEXT;
 }
 
 sub scope_container {
@@ -87,7 +96,7 @@ Scope::Container is scope based container for temporary items and Database Conne
 
 =item my $scope_container = start_scope_container([-clear => 1]);
 
-initializing container. The default behavior is inherited all the previous container's data.
+Initializing container. The default behavior is inherited all the previous container's data.
 If set -clear arguments, save previous container's data and create new data.
 
 return values is Scope::Container object. if this object scope exits, current container will be removed, return to the previous state.
@@ -96,11 +105,16 @@ return values is Scope::Container object. if this object scope exits, current co
 
 getter, setter of container data.
 
+=item in_scope_container
+
+Check if context is initialized
+
 =back
 
 =head1 LIMITATION
 
-There is a limit to the order in which the Scope::Container object is deleted
+There is a limit to the order in which the Scope::Container object is deleted. 
+If race condition found, remove all data. 
 
   my $sc = start_scope_container();
   scope_container('bar', 'foo');

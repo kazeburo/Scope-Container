@@ -102,6 +102,15 @@ sub bar {
     }
     is(scope_container('foo'), 'foo2');
 }
+{
+    ok( !in_scope_container() );
+}
+
+{
+    my $sc = start_scope_container();
+    ok( in_scope_container() );
+}
+
 
 
 done_testing;

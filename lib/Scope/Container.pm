@@ -2,10 +2,11 @@ package Scope::Container;
 
 use strict;
 use warnings;
+use 5.008_001;
 use Carp qw//;
 use base qw/Exporter/;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 our @EXPORT = qw/start_scope_container scope_container in_scope_container/;
 
 my $CONTEXT;

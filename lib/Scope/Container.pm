@@ -6,7 +6,7 @@ use 5.008_001;
 use Carp qw//;
 use base qw/Exporter/;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 our @EXPORT = qw/start_scope_container scope_container in_scope_container/;
 
 my $CONTEXT;

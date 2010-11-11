@@ -1,5 +1,8 @@
 Revision history for Perl extension Scope::Container
 
+0.04    Thu Nov 11 11:11:11 2010
+        - test_requires Test::More 0.88
+
 0.03    Fri Nov 05 10:56:30 2010
         - require perl 5.008_001
 
